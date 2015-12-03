@@ -12,7 +12,7 @@ var getDataURL = require( './getDataURL.js' );
 var Image = Canvas.Image;
 
 function triangulateImage ( imgPath, params, callback ) {
-	fs.readFile( __dirname + '/' + imgPath, function ( err, src ){
+	fs.readFile( ((imgPath.charAt(0) != '/') ? __dirname + '/' : '') + imgPath, function ( err, src ){
 		if ( err ) {
 			throw err;
 		}
