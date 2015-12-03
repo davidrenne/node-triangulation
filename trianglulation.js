@@ -43,17 +43,36 @@ function triangulateImage ( imgPath, params, callback ) {
 }
 
 var configParams = {
-	blur: 50,         // can be whatever
-	accuracy: 0.2,    // between 0 - 1
-	pointRate: 0.03,  // between 0.001 - 0.1
-	pointCount: 1200  // can be whatever
+        blur: 50,         // can be whatever
+        accuracy: 0.2,    // between 0 - 1
+        pointRate: 0.2,  // between 0.001 - 0.1
+        pointCount: 50  // can be whatever
 };
 
-triangulateImage( 'images/lincoln.jpg', configParams, function ( triangles, size ) {
-	var svgMarkup = getSVGMarkupFromTriangleData( triangles, size );
-	console.log( 'triangulated SVG markup', svgMarkup );
+function decodeBase64Image(dataString) {
+        var matches = dataString.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/),
+        response = {};
 
-	var dataURL = getDataURL( triangles, size );
-	console.log( 'triangulated Canvas Data URL:', dataURL );
+        if (matches.length !== 3) {
+                return new Error('Invalid input string');
+        }
+
+        response.type = matches[1];
+        response.data = new Buffer(matches[2], 'base64');
+
+        return response;
+}
+
+var snorpeyArgs = process.argv.slice(2);
+
+triangulateImage( snorpeyArgs[0] , configParams, function ( triangles, size ) {
+        //var svgMarkup = getSVGMarkupFromTriangleData( triangles, size );
+        //console.log( 'triangulated SVG markup', svgMarkup );
+
+        var dataURL = getDataURL( triangles, size );
+        //console.log( 'triangulated Canvas Data URL:', dataURL );
+
+        var imageBuffer = decodeBase64Image(dataURL);
+        fs.writeFile('/tmp/snorpey.jpg', imageBuffer.data);
 } );
 
